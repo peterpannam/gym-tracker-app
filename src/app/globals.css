@@ -1,26 +1,183 @@
+/* ============================================================================
+   GymTrack — globals.css  (Tailwind CSS v4 + Next.js 15)
+   "Bold & Athletic" redesign — lime energy accent, condensed display type,
+   deep cool-ink canvas, dramatic muscle heatmap.
+   ============================================================================ */
+
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ---- Canvas (dark only) ---- */
+  --bg:            #07090d;
+  --bg-2:          #0b0e13;
+  --surface:       #12151c;
+  --surface-2:     #1a1e27;
+  --sheet:         #0f1218;
+
+  /* ---- Borders ---- */
+  --border:        rgba(255,255,255,0.07);
+  --border-strong: rgba(255,255,255,0.13);
+
+  /* ---- Text ---- */
+  --t1:            #f3f5f8;
+  --t2:            #9aa3b1;
+  --t3:            #5c6573;
+
+  /* ---- Brand (lime energy) ---- */
+  --brand:         #a3e635;
+  --brand-deep:    #84cc16;
+  --brand-glow:    rgba(163,230,53,0.22);
+  --on-brand:      #0a0c10;
+
+  /* ---- Heat / intensity scale ---- */
+  --heat-0:        #64748b;
+  --heat-1:        #fde047;
+  --heat-2:        #fb923c;
+  --heat-3:        #f43f5e;
+  --heat-4:        #dc2626;
+  --heat-intensity: 1.5;
+
+  /* ---- Status ---- */
+  --red:           #f43f5e;
+  --orange:        #fb923c;
+  --amber:         #fbbf24;
+
+  /* ---- Type ---- */
+  --font-body:     var(--font-geist-sans, "Geist", system-ui, sans-serif);
+  --font-mono:     var(--font-geist-mono, "Geist Mono", ui-monospace, monospace);
+  --font-display:  var(--font-oswald, "Oswald", sans-serif);
+  --display-ls:    0.01em;
+
+  /* ---- Radii ---- */
+  --r-sm: 10px;  --r-md: 16px;  --r-lg: 22px;  --r-sheet: 28px;
+
+  /* legacy aliases */
+  --background: var(--bg);
+  --foreground: var(--t1);
 }
 
+/* ---- Tailwind v4 theme bridge ---- */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background:    var(--bg);
+  --color-bg-2:          var(--bg-2);
+  --color-surface:       var(--surface);
+  --color-surface-2:     var(--surface-2);
+  --color-sheet:         var(--sheet);
+
+  --color-border:        var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-t1:            var(--t1);
+  --color-t2:            var(--t2);
+  --color-t3:            var(--t3);
+
+  --color-brand:         var(--brand);
+  --color-brand-deep:    var(--brand-deep);
+  --color-on-brand:      var(--on-brand);
+
+  --color-heat-0:        var(--heat-0);
+  --color-heat-1:        var(--heat-1);
+  --color-heat-2:        var(--heat-2);
+  --color-heat-3:        var(--heat-3);
+  --color-heat-4:        var(--heat-4);
+
+  --color-red:           var(--red);
+  --color-orange:        var(--orange);
+  --color-amber:         var(--amber);
+
+  --font-sans:           var(--font-body);
+  --font-mono:           var(--font-mono);
+  --font-display:        var(--font-display);
+
+  --radius-sm:           var(--r-sm);
+  --radius-md:           var(--r-md);
+  --radius-lg:           var(--r-lg);
+  --radius-sheet:        var(--r-sheet);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ---- Base ---- */
+html, body { margin: 0; min-height: 100%; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(120% 80% at 50% 0%, #14171d 0%, #07090d 55%, #050609 100%);
+  color: var(--t1);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+/* Mobile niceties */
+* { -webkit-tap-highlight-color: transparent; }
+input { -webkit-appearance: none; }
+input[type="number"] { -moz-appearance: textfield; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* ---- Reusable utilities ---- */
+
+.gt-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: var(--display-ls);
+  line-height: 0.9;
+  color: var(--t1);
+  font-variant-numeric: tabular-nums;
+}
+
+.gt-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--t3);
+}
+
+.gt-btn-primary {
+  background: var(--brand);
+  color: var(--on-brand);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: var(--display-ls);
+  text-transform: uppercase;
+  border-radius: var(--r-md);
+  box-shadow: 0 10px 30px var(--brand-glow);
+}
+
+.gt-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.gt-nav {
+  background: rgba(13,16,22,0.82);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  border-radius: var(--r-lg);
+}
+
+/* ---- Heatmap glow animation ---- */
+@keyframes gt-pulse {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%      { opacity: 0.62; transform: scale(1.08); }
+}
+.gt-heat-pulse { animation: gt-pulse 2.6s ease-in-out infinite; }
+
+/* Invalid input shake */
+@keyframes gt-shake {
+  0%, 100%   { transform: translateX(0); }
+  20%, 60%   { transform: translateX(-6px); }
+  40%, 80%   { transform: translateX(6px); }
+}
+.gt-shake { animation: gt-shake 0.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gt-heat-pulse, .gt-shake { animation: none; }
+}
+
+/* Hide scrollbars inside the app shell */
+.gt-scroll::-webkit-scrollbar { width: 0; height: 0; }
+.gt-scroll { scrollbar-width: none; }
