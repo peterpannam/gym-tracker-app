@@ -411,9 +411,7 @@ export default function AnatomyViewer() {
           <div className="gt-eyebrow" style={{ flexShrink: 0 }}>Last 7 days</div>
           <div style={{ flex: 1, height: 7, borderRadius: 99, background: 'linear-gradient(90deg, #334155, #fde047, #fb923c, #f43f5e, #dc2626)', opacity: 0.9 }} />
           <div style={{ display: 'flex', gap: 5, alignItems: 'center', color: 'var(--t3)', fontSize: 11, flexShrink: 0 }}>
-            <span>Rest</span>
-            <span>›</span>
-            <span style={{ color: 'var(--red)', fontWeight: 700 }}>Fire</span>
+            <span>Usage indicator</span>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 10, color: 'var(--t3)', fontSize: 12.5 }}>
