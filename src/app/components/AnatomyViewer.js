@@ -317,13 +317,12 @@ export default function AnatomyViewer() {
       </div>
 
       {/* ── Header row ── */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 10, marginTop: 2 }}>
-        <div>
-          <div className="gt-eyebrow">Today · Let&apos;s Move</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 27, lineHeight: 0.95, letterSpacing: '0.01em', textTransform: 'uppercase', color: 'var(--t1)', marginTop: 4 }}>
-            Training Map
-          </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, marginTop: 2 }}>
+
+        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 27, lineHeight: 0.95, letterSpacing: '0.01em', textTransform: 'uppercase', color: 'var(--t1)' }}>
+          Training Map
         </div>
+
         {/* Front / Back segmented toggle */}
         <div style={{ display: 'flex', padding: 3, borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)', flexShrink: 0 }}>
           {['front', 'back'].map(v => (

@@ -131,9 +131,6 @@ export default function LoginPage() {
               <div className="gt-display" style={{ fontSize: 34, lineHeight: 0.98, color: 'var(--t1)' }}>
                 Time to<br /><span style={{ color: 'var(--brand)' }}>train.</span>
               </div>
-              <div style={{ marginTop: 12, color: 'var(--t2)', fontSize: 14.5, lineHeight: 1.45 }}>
-                Pick your athlete. Track every set, light up every muscle.
-              </div>
             </div>
           </div>
 
@@ -160,7 +157,7 @@ export default function LoginPage() {
             ) : (
               <>
                 <div className="gt-eyebrow" style={{ marginBottom: 2 }}>
-                  Athletes &middot; {profiles.length}
+                  Profiles &middot; {profiles.length}
                 </div>
 
                 {profiles.map(p => (
