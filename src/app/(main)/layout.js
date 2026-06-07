@@ -17,8 +17,8 @@ function MainShell({ children }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--bg)' }}>
-        <div style={{ color: 'var(--t3)', fontSize: 14 }}>Loading…</div>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-t3 text-[14px]">Loading…</div>
       </div>
     );
   }
@@ -26,7 +26,7 @@ function MainShell({ children }) {
   if (!currentProfile) return null;
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'transparent' }}>
+    <div className="min-h-screen flex flex-col bg-background">
       <main className="flex-1 pb-24 gt-scroll overflow-y-auto">
         {children}
       </main>

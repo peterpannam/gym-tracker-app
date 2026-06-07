@@ -12,31 +12,21 @@ const MUSCLE_LABELS = {
   'rear-delts': 'Rear Delts', glutes: 'Glutes', hamstrings: 'Hamstrings',
 };
 
-// ── Sub-components ─────────────────────────────────────────────────────────
 function NumField({ value, onChange, placeholder, unit }) {
   return (
-    <div style={{ flex: 1, position: 'relative' }}>
+    <div className="flex-1 relative">
       <input
         type="number"
         inputMode="decimal"
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        style={{
-          width: '100%', boxSizing: 'border-box', textAlign: 'center',
-          padding: '14px 10px', borderRadius: 14,
-          background: 'var(--surface)', color: 'var(--t1)',
-          fontFamily: 'var(--font-display)', fontWeight: 600,
-          fontSize: 22, letterSpacing: '0.01em',
-          border: '1px solid var(--border-strong)', outline: 'none',
-          fontVariantNumeric: 'tabular-nums',
-        }}
+        className="w-full box-border text-center px-[10px] py-[14px] rounded-[14px] bg-surface text-t1 font-display font-semibold text-[22px] tracking-[0.01em] border border-border-strong outline-none tabular-nums"
       />
       {unit && (
-        <span style={{
-          position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-          fontSize: 11, color: 'var(--t3)', fontFamily: 'var(--font-mono)', pointerEvents: 'none',
-        }}>{unit}</span>
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-t3 font-mono pointer-events-none">
+          {unit}
+        </span>
       )}
     </div>
   );
@@ -46,20 +36,17 @@ function Chip({ active, onClick, children }) {
   return (
     <button
       onMouseDown={onClick}
-      style={{
-        flexShrink: 0, padding: '9px 15px', borderRadius: 999,
-        fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
-        cursor: 'pointer', whiteSpace: 'nowrap',
-        border: '1px solid ' + (active ? 'transparent' : 'var(--border)'),
-        background: active ? 'var(--brand)' : 'transparent',
-        color: active ? '#0a0c10' : 'var(--t2)',
-        transition: 'all .15s',
-      }}
-    >{children}</button>
+      className={`shrink-0 px-[15px] py-[9px] rounded-full text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all duration-150 border ${
+        active
+          ? 'border-transparent bg-brand text-[#0a0c10]'
+          : 'border-border bg-transparent text-t2'
+      }`}
+    >
+      {children}
+    </button>
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────
 export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
   const { currentProfile } = useAuth();
   const [shown, setShown]   = useState(false);
@@ -71,7 +58,6 @@ export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
   const [err, setErr]       = useState('');
   const [saved, setSaved]   = useState(false);
 
-  // Slide-up entrance animation
   useEffect(() => {
     requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
   }, []);
@@ -124,79 +110,59 @@ export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
   }
 
   return (
-    /* Overlay */
     <div
+      className="fixed inset-0 z-[80] flex items-end"
       style={{
-        position: 'fixed', inset: 0, zIndex: 80,
-        display: 'flex', alignItems: 'flex-end',
         background: shown ? 'rgba(2,4,8,0.62)' : 'rgba(2,4,8,0)',
         backdropFilter: shown ? 'blur(2px)' : 'none',
         transition: 'background .3s, backdrop-filter .3s',
       }}
       onClick={handleClose}
     >
-      {/* Sheet panel */}
       <div
         onClick={e => e.stopPropagation()}
+        className="w-full max-h-[92%] bg-sheet rounded-t-[28px] overflow-hidden border border-b-0 border-border flex flex-col"
         style={{
-          width: '100%', maxHeight: '92%',
-          background: 'var(--sheet)', borderRadius: '28px 28px 0 0',
-          overflow: 'hidden', boxShadow: '0 -24px 60px rgba(0,0,0,0.6)',
-          border: '1px solid var(--border)', borderBottom: 'none',
+          boxShadow: '0 -24px 60px rgba(0,0,0,0.6)',
           transform: shown ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform .34s cubic-bezier(.16,1,.3,1)',
-          display: 'flex', flexDirection: 'column',
         }}
       >
         {/* Drag handle */}
-        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 10, flexShrink: 0 }}>
-          <div style={{ width: 40, height: 5, borderRadius: 99, background: 'var(--border-strong)' }} />
+        <div className="flex justify-center pt-[10px] shrink-0">
+          <div className="w-10 h-[5px] rounded-full bg-border-strong" />
         </div>
 
         {/* Header */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '14px 20px 12px', flexShrink: 0,
-        }}>
+        <div className="flex items-center justify-between px-5 pt-[14px] pb-3 shrink-0">
           <div>
             <div className="gt-eyebrow">Log session</div>
-            <div className="gt-display" style={{ fontSize: 25, marginTop: 3, color: 'var(--t1)' }}>
-              NEW WORKOUT
-            </div>
+            <div className="gt-display text-[25px] mt-[3px] text-t1">NEW WORKOUT</div>
           </div>
           <button
             onClick={handleClose}
-            style={{
-              width: 38, height: 38, borderRadius: 12, cursor: 'pointer',
-              border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--t2)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
+            className="size-[38px] rounded-[12px] cursor-pointer border border-border bg-surface text-t2 flex items-center justify-center"
           >
             <X size={19} />
           </button>
         </div>
 
         {/* Scrollable content */}
-        <div
-          className="gt-scroll"
-          style={{ overflowY: 'auto', padding: '4px 20px 0', display: 'flex', flexDirection: 'column', gap: 18 }}
-        >
+        <div className="gt-scroll overflow-y-auto px-5 pt-1 flex flex-col gap-[18px]">
+
           {/* Suggested chips */}
           {preselectedMuscle && suggested.length > 0 && !ex && (
             <div>
-              <div className="gt-eyebrow" style={{ marginBottom: 9 }}>
+              <div className="gt-eyebrow mb-[9px]">
                 Suggested · {MUSCLE_LABELS[preselectedMuscle] || preselectedMuscle.replace(/-/g, ' ')}
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <div className="flex flex-wrap gap-2">
                 {suggested.map(e => (
                   <button
                     key={e.id}
                     onClick={() => pick(e)}
-                    style={{
-                      padding: '10px 14px', borderRadius: 999, cursor: 'pointer',
-                      border: '1px solid var(--brand)', background: 'var(--brand-glow)',
-                      color: 'var(--brand)', fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
-                    }}
+                    className="px-[14px] py-[10px] rounded-full cursor-pointer border border-brand text-brand text-[13px] font-semibold"
+                    style={{ background: 'var(--brand-glow)' }}
                   >{e.name}</button>
                 ))}
               </div>
@@ -205,12 +171,9 @@ export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
 
           {/* Exercise search */}
           <div>
-            <div className="gt-eyebrow" style={{ marginBottom: 9 }}>Exercise</div>
-            <div style={{ position: 'relative' }}>
-              <span style={{
-                position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)',
-                color: 'var(--t3)', display: 'flex', pointerEvents: 'none',
-              }}>
+            <div className="gt-eyebrow mb-[9px]">Exercise</div>
+            <div className="relative">
+              <span className="absolute left-[14px] top-1/2 -translate-y-1/2 text-t3 flex pointer-events-none">
                 <Search size={18} />
               </span>
               <input
@@ -219,23 +182,13 @@ export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
                 onChange={e => { setQuery(e.target.value); setOpen(true); if (!e.target.value) setEx(null); }}
                 onBlur={() => setTimeout(() => setOpen(false), 150)}
                 placeholder="Search exercises…"
-                style={{
-                  width: '100%', boxSizing: 'border-box',
-                  padding: '14px 16px 14px 44px', borderRadius: 16,
-                  background: 'var(--surface)', color: 'var(--t1)',
-                  fontSize: 15, fontFamily: 'inherit',
-                  border: '1px solid ' + (ex ? 'var(--brand)' : 'var(--border-strong)'),
-                  outline: 'none',
-                }}
+                className={`w-full box-border py-[14px] pl-[44px] pr-4 rounded-[16px] bg-surface text-t1 text-[15px] outline-none border ${ex ? 'border-brand' : 'border-border-strong'}`}
               />
             </div>
 
             {/* Category chips */}
             {open && !query.trim() && (
-              <div
-                className="gt-scroll"
-                style={{ display: 'flex', gap: 7, marginTop: 10, overflowX: 'auto', paddingBottom: 2 }}
-              >
+              <div className="gt-scroll flex gap-[7px] mt-[10px] overflow-x-auto pb-[2px]">
                 {['All', ...EXERCISE_CATEGORIES].map(c => (
                   <Chip key={c} active={cat === c} onClick={() => setCat(c)}>{c}</Chip>
                 ))}
@@ -244,32 +197,22 @@ export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
 
             {/* Exercise dropdown */}
             {open && (
-              <div style={{
-                marginTop: 10, borderRadius: 16, border: '1px solid var(--border)',
-                background: 'var(--surface)', overflow: 'hidden', maxHeight: 230, overflowY: 'auto',
-              }}>
+              <div className="mt-[10px] rounded-[16px] border border-border bg-surface overflow-hidden max-h-[230px] overflow-y-auto">
                 {list.slice(0, 30).map(e => (
                   <button
                     key={e.id}
                     onMouseDown={() => pick(e)}
-                    style={{
-                      width: '100%', textAlign: 'left', cursor: 'pointer',
-                      padding: '12px 16px', background: 'transparent', border: 'none',
-                      borderBottom: '1px solid var(--border)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    }}
+                    className="w-full text-left cursor-pointer px-4 py-3 bg-transparent border-0 border-b border-border flex items-center justify-between"
                   >
-                    <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{ color: 'var(--t1)', fontSize: 14.5, fontWeight: 600 }}>{e.name}</div>
-                      <div style={{ color: 'var(--t3)', fontSize: 11.5, marginTop: 2 }}>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-t1 text-[14.5px] font-semibold">{e.name}</div>
+                      <div className="text-t3 text-[11.5px] mt-[2px]">
                         {e.primaryMuscles.map(m => MUSCLE_LABELS[m] || m).join(' · ')}
                       </div>
                     </div>
-                    <span style={{
-                      fontSize: 10, fontFamily: 'var(--font-mono)', color: 'var(--t3)',
-                      border: '1px solid var(--border-strong)', borderRadius: 6,
-                      padding: '3px 7px', flexShrink: 0, marginLeft: 8,
-                    }}>{e.category}</span>
+                    <span className="text-[10px] font-mono text-t3 border border-border-strong rounded-[6px] px-[7px] py-[3px] shrink-0 ml-2">
+                      {e.category}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -279,40 +222,27 @@ export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
           {/* Sets */}
           {ex && (
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div className="flex items-center justify-between mb-3">
                 <div className="gt-eyebrow">Sets · {ex.name}</div>
                 <button
                   onClick={() => setSets(s => [...s, { weight: '', reps: '' }])}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 5,
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    color: 'var(--brand)', fontSize: 12.5, fontWeight: 700, fontFamily: 'inherit',
-                  }}
+                  className="flex items-center gap-[5px] bg-transparent border-0 cursor-pointer text-brand text-[12.5px] font-bold"
                 >
                   <Plus size={15} strokeWidth={2.5} /> Add set
                 </button>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+              <div className="flex flex-col gap-[9px]">
                 {sets.map((s, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                    <div style={{
-                      width: 34, height: 34, flexShrink: 0, borderRadius: 10,
-                      background: 'var(--surface-2)', color: 'var(--brand)',
-                      fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16,
-                      letterSpacing: 'var(--display-ls)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>{i + 1}</div>
+                  <div key={i} className="flex items-center gap-[9px]">
+                    <div className="size-[34px] shrink-0 rounded-[10px] bg-surface-2 text-brand font-display font-bold text-[16px] tracking-[var(--display-ls)] flex items-center justify-center">
+                      {i + 1}
+                    </div>
                     <NumField value={s.weight} onChange={v => upd(i, 'weight', v)} placeholder="0" unit="kg" />
-                    <span style={{ color: 'var(--t3)', fontSize: 14, flexShrink: 0 }}>×</span>
+                    <span className="text-t3 text-[14px] shrink-0">×</span>
                     <NumField value={s.reps} onChange={v => upd(i, 'reps', v)} placeholder="0" unit="reps" />
                     <button
                       onClick={() => sets.length > 1 && setSets(s => s.filter((_, j) => j !== i))}
-                      style={{
-                        width: 30, flexShrink: 0, background: 'none', border: 'none',
-                        cursor: 'pointer',
-                        color: sets.length > 1 ? 'var(--t3)' : 'transparent',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}
+                      className={`w-[30px] shrink-0 bg-transparent border-0 cursor-pointer flex items-center justify-center ${sets.length > 1 ? 'text-t3' : 'text-transparent'}`}
                     >
                       <Minus size={18} />
                     </button>
@@ -322,31 +252,23 @@ export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
             </div>
           )}
 
-          {err && (
-            <div style={{ color: 'var(--red)', fontSize: 13, fontWeight: 600 }}>{err}</div>
-          )}
-
-          <div style={{ height: 4 }} />
+          {err && <div className="text-red text-[13px] font-semibold">{err}</div>}
+          <div className="h-1" />
         </div>
 
         {/* Sticky footer */}
-        <div style={{
-          padding: '14px 20px calc(18px + env(safe-area-inset-bottom))',
-          borderTop: '1px solid var(--border)',
-          background: 'var(--sheet)',
-          display: 'flex', flexDirection: 'column', gap: 12,
-          flexShrink: 0,
-        }}>
+        <div
+          className="px-5 border-t border-border bg-sheet flex flex-col gap-3 shrink-0"
+          style={{ padding: '14px 20px calc(18px + env(safe-area-inset-bottom))' }}
+        >
           {total > 0 && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div className="flex items-center justify-between">
               <div className="gt-eyebrow">Total volume</div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                <span style={{
-                  fontFamily: 'var(--font-display)', fontWeight: 700,
-                  fontSize: 26, lineHeight: 0.9, letterSpacing: 'var(--display-ls)',
-                  color: 'var(--brand)', fontVariantNumeric: 'tabular-nums',
-                }}>{total.toLocaleString()}</span>
-                <span style={{ fontSize: 12, color: 'var(--t3)', fontFamily: 'var(--font-mono)' }}>kg</span>
+              <div className="flex items-baseline gap-[5px]">
+                <span className="font-display font-bold text-[26px] leading-none tracking-[var(--display-ls)] text-brand tabular-nums">
+                  {total.toLocaleString()}
+                </span>
+                <span className="text-[12px] text-t3 font-mono">kg</span>
               </div>
             </div>
           )}
@@ -354,18 +276,8 @@ export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
           <button
             onClick={save}
             disabled={saved}
-            style={{
-              width: '100%', padding: '17px', borderRadius: 18, cursor: 'pointer',
-              border: 'none',
-              background: saved ? 'var(--brand-deep)' : 'var(--brand)',
-              color: '#0a0c10',
-              fontFamily: 'var(--font-display)', fontWeight: 700,
-              fontSize: 19, letterSpacing: 'var(--display-ls)',
-              textTransform: 'uppercase',
-              boxShadow: '0 10px 30px var(--brand-glow)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9,
-              transition: 'background .2s',
-            }}
+            className={`w-full py-[17px] rounded-[18px] cursor-pointer border-0 text-[#0a0c10] font-display font-bold text-[19px] tracking-[var(--display-ls)] uppercase flex items-center justify-center gap-[9px] transition-colors duration-200 ${saved ? 'bg-brand-deep' : 'bg-brand'}`}
+            style={{ boxShadow: '0 10px 30px var(--brand-glow)' }}
           >
             {saved
               ? <><Check size={21} strokeWidth={2.6} /> Saved</>

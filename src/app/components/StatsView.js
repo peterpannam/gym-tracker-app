@@ -4,7 +4,6 @@ import { Flame, Calendar, TrendingUp, Trophy, ArrowUp, ArrowDown } from 'lucide-
 import { useAuth } from '@/contexts/AuthContext';
 import { getWorkouts } from '@/lib/storage';
 
-// ── Local date helpers ─────────────────────────────────────────────────────
 function ymd(d) {
   return d.getFullYear() + '-' +
     String(d.getMonth() + 1).padStart(2, '0') + '-' +
@@ -15,7 +14,6 @@ function fmtDate(ds) {
   return new Date(ds + 'T00:00:00').toLocaleDateString('en-AU', { month: 'short', day: 'numeric' });
 }
 
-// ── Stat helpers ───────────────────────────────────────────────────────────
 function vol(w) { return w.sets.reduce((s, x) => s + x.weight * x.reps, 0); }
 
 function thisWeekCount(workouts) {
@@ -91,7 +89,6 @@ function buildPRs(workouts, n = 6) {
     .sort((a, b) => b.weight - a.weight).slice(0, n);
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────
 function VolumeChart({ data }) {
   const W = 320, H = 130, pad = 6;
   if (data.length < 2) return null;
@@ -114,7 +111,7 @@ function VolumeChart({ data }) {
       width="100%"
       height={H}
       preserveAspectRatio="none"
-      style={{ display: 'block', overflow: 'visible' }}
+      className="block overflow-visible"
     >
       <defs>
         <linearGradient id="gtVolFill" x1="0" y1="0" x2="0" y2="1">
@@ -141,65 +138,47 @@ function VolumeChart({ data }) {
 
 function BarRow({ label, value, max, color }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '7px 0' }}>
-      <div style={{
-        width: 96, fontSize: 12.5, color: 'var(--t2)', flexShrink: 0,
-        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-      }}>{label}</div>
-      <div style={{
-        flex: 1, height: 10, borderRadius: 99,
-        background: 'var(--surface-2)', overflow: 'hidden',
-      }}>
-        <div style={{
-          width: Math.max(4, (value / max) * 100) + '%',
-          height: '100%', borderRadius: 99,
-          background: color || 'linear-gradient(90deg, var(--brand-deep), var(--brand))',
-        }} />
+    <div className="flex items-center gap-3 py-[7px]">
+      <div className="w-24 text-[12.5px] text-t2 shrink-0 overflow-hidden text-ellipsis whitespace-nowrap">{label}</div>
+      <div className="flex-1 h-[10px] rounded-full bg-surface-2 overflow-hidden">
+        <div
+          className="h-full rounded-full"
+          style={{
+            width: Math.max(4, (value / max) * 100) + '%',
+            background: color || 'linear-gradient(90deg, var(--brand-deep), var(--brand))',
+          }}
+        />
       </div>
-      <div style={{
-        width: 52, textAlign: 'right',
-        fontFamily: 'var(--font-mono)', fontSize: 11.5,
-        color: 'var(--t1)', flexShrink: 0,
-      }}>{value.toLocaleString()}</div>
+      <div className="w-[52px] text-right font-mono text-[11.5px] text-t1 shrink-0">{value.toLocaleString()}</div>
     </div>
   );
 }
 
 function ScoreCard({ Icon: IconComp, value, unit, label, accent }) {
   return (
-    <div style={{
-      flex: 1, borderRadius: 18, padding: '14px 13px',
-      position: 'relative', overflow: 'hidden',
-      background: 'var(--surface)', border: '1px solid var(--border)',
-    }}>
-      <div style={{
-        position: 'absolute', top: -16, right: -16,
-        width: 60, height: 60, borderRadius: '50%',
-        background: `radial-gradient(circle, ${accent}33, transparent 70%)`,
-      }} />
-      <span style={{ color: accent, display: 'flex' }}>
+    <div className="flex-1 rounded-[18px] p-[14px_13px] relative overflow-hidden bg-surface border border-border">
+      <div
+        className="absolute -top-4 -right-4 size-[60px] rounded-full"
+        style={{ background: `radial-gradient(circle, ${accent}33, transparent 70%)` }}
+      />
+      <span className="flex" style={{ color: accent }}>
         <IconComp size={18} strokeWidth={2} />
       </span>
-      <div style={{ marginTop: 16, display: 'flex', alignItems: 'baseline', gap: 3 }}>
-        <span style={{
-          fontFamily: 'var(--font-display)', fontWeight: 700,
-          fontSize: 36, lineHeight: 1, letterSpacing: 'var(--display-ls)',
-          color: 'var(--t1)',
-        }}>{value}</span>
-        <span style={{ fontSize: 11, color: 'var(--t3)', fontFamily: 'var(--font-mono)' }}>{unit}</span>
+      <div className="mt-4 flex items-baseline gap-[3px]">
+        <span className="font-display font-bold text-[36px] leading-none tracking-[var(--display-ls)] text-t1 tabular-nums">
+          {value}
+        </span>
+        <span className="text-[11px] text-t3 font-mono">{unit}</span>
       </div>
-      <div style={{ fontSize: 11.5, color: 'var(--t2)', marginTop: 4 }}>{label}</div>
+      <div className="text-[11.5px] text-t2 mt-1">{label}</div>
     </div>
   );
 }
 
 function Panel({ title, right, children }) {
   return (
-    <div style={{
-      borderRadius: 22, border: '1px solid var(--border)',
-      background: 'var(--surface)', padding: '16px 16px 14px',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+    <div className="rounded-lg border border-border bg-surface p-[16px_16px_14px]">
+      <div className="flex items-center justify-between mb-[14px]">
         <div className="gt-eyebrow">{title}</div>
         {right && <div>{right}</div>}
       </div>
@@ -208,7 +187,6 @@ function Panel({ title, right, children }) {
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────
 export default function StatsView() {
   const { currentProfile } = useAuth();
   const [workouts, setWorkouts] = useState([]);
@@ -233,26 +211,14 @@ export default function StatsView() {
     [volData],
   );
 
-  // ── Empty state ──────────────────────────────────────────────────────────
   if (!workouts.length) {
     return (
-      <div style={{
-        minHeight: '100%', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        padding: 32, textAlign: 'center',
-      }}>
-        <div style={{
-          width: 74, height: 74, borderRadius: 22,
-          background: 'var(--surface)', border: '1px solid var(--border)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'var(--brand)',
-        }}>
+      <div className="min-h-full flex flex-col items-center justify-center p-8 text-center">
+        <div className="size-[74px] rounded-[22px] bg-surface border border-border flex items-center justify-center text-brand">
           <TrendingUp size={34} strokeWidth={1.8} />
         </div>
-        <div className="gt-display" style={{ fontSize: 26, marginTop: 18, color: 'var(--t1)' }}>
-          NO NUMBERS YET
-        </div>
-        <div style={{ color: 'var(--t2)', fontSize: 14, marginTop: 8, maxWidth: 240, lineHeight: 1.55 }}>
+        <div className="gt-display text-[26px] mt-[18px] text-t1">NO NUMBERS YET</div>
+        <div className="text-t2 text-[14px] mt-2 max-w-[240px] leading-[1.55]">
           Log your first set and your scoreboard lights up.
         </div>
       </div>
@@ -263,18 +229,14 @@ export default function StatsView() {
   const trendLabel = (trendPositive ? '+' : '') + (volTrend / 1000).toFixed(1) + 'k';
 
   return (
-    <div style={{ padding: '8px 18px 0', display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div className="px-[18px] pt-2 flex flex-col gap-4">
 
-      {/* Header */}
       <div>
         <div className="gt-eyebrow">Your numbers</div>
-        <div className="gt-display" style={{ fontSize: 32, marginTop: 4, color: 'var(--t1)' }}>
-          SCOREBOARD
-        </div>
+        <div className="gt-display text-[32px] mt-1 text-t1">SCOREBOARD</div>
       </div>
 
-      {/* Score cards */}
-      <div style={{ display: 'flex', gap: 10 }}>
+      <div className="flex gap-[10px]">
         <ScoreCard Icon={Calendar}    value={week}   unit="/7"  label="Sessions this week" accent="var(--brand)" />
         <ScoreCard Icon={Flame}       value={streak} unit="d"   label="Current streak"     accent="var(--orange)" />
         <ScoreCard
@@ -286,14 +248,10 @@ export default function StatsView() {
         />
       </div>
 
-      {/* Volume chart */}
       <Panel
         title="Daily volume · 14 days"
         right={
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 700,
-            color: trendPositive ? 'var(--brand)' : 'var(--orange)',
-          }}>
+          <div className={`flex items-center gap-1 text-[12px] font-bold ${trendPositive ? 'text-brand' : 'text-orange'}`}>
             {trendPositive
               ? <ArrowUp size={13} strokeWidth={2.5} />
               : <ArrowDown size={13} strokeWidth={2.5} />}
@@ -302,16 +260,13 @@ export default function StatsView() {
         }
       >
         <VolumeChart data={volData} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+        <div className="flex justify-between mt-2">
           {volData.filter((_, i) => i % 3 === 0).map((d, i) => (
-            <span key={i} style={{
-              fontSize: 9.5, color: 'var(--t3)', fontFamily: 'var(--font-mono)',
-            }}>{d.date}</span>
+            <span key={i} className="text-[9.5px] text-t3 font-mono">{d.date}</span>
           ))}
         </div>
       </Panel>
 
-      {/* Top exercises */}
       {topEx.length > 0 && (
         <Panel title="Top exercises · volume">
           {topEx.map(e => (
@@ -320,7 +275,6 @@ export default function StatsView() {
         </Panel>
       )}
 
-      {/* Muscle frequency */}
       {muscleFreq.length > 0 && (
         <Panel title="Muscle frequency · sets">
           {muscleFreq.map(m => (
@@ -335,58 +289,45 @@ export default function StatsView() {
         </Panel>
       )}
 
-      {/* PR trophy case */}
       {prs.length > 0 && (
         <Panel title="Personal records">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="flex flex-col gap-2">
             {prs.map((pr, i) => {
               const gold = i === 0;
               return (
-                <div key={pr.exercise} style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: gold ? '14px 14px' : '10px 12px',
-                  borderRadius: 16,
-                  background: gold
-                    ? 'linear-gradient(100deg, rgba(251,191,36,0.16), rgba(251,146,60,0.05))'
-                    : 'var(--surface-2)',
-                  border: '1px solid ' + (gold ? 'rgba(251,191,36,0.4)' : 'var(--border)'),
-                }}>
-                  {/* Rank tile */}
-                  <div style={{
-                    width: gold ? 38 : 28, height: gold ? 38 : 28, flexShrink: 0,
-                    borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: gold ? '#fbbf24' : 'transparent',
-                    color: gold ? '#0a0c10' : 'var(--t3)',
-                    fontFamily: 'var(--font-display)', fontWeight: 700,
-                    fontSize: gold ? 16 : 14,
-                  }}>
+                <div
+                  key={pr.exercise}
+                  className={`flex items-center gap-3 rounded-[16px] border ${
+                    gold
+                      ? 'px-[14px] py-[14px] border-[rgba(251,191,36,0.4)]'
+                      : 'px-3 py-[10px] bg-surface-2 border-border'
+                  }`}
+                  style={gold ? { background: 'linear-gradient(100deg, rgba(251,191,36,0.16), rgba(251,146,60,0.05))' } : undefined}
+                >
+                  <div className={`shrink-0 rounded-[10px] flex items-center justify-center font-display font-bold ${
+                    gold
+                      ? 'size-[38px] bg-amber text-[#0a0c10] text-[16px]'
+                      : 'size-7 bg-transparent text-t3 text-[14px]'
+                  }`}>
                     {gold ? <Trophy size={20} strokeWidth={2} /> : i + 1}
                   </div>
 
-                  {/* Name + label */}
-                  <div style={{ flex: 1 }}>
-                    <div style={{
-                      color: 'var(--t1)', fontSize: gold ? 15.5 : 14,
-                      fontWeight: gold ? 700 : 600,
-                    }}>{pr.exercise}</div>
+                  <div className="flex-1">
+                    <div className={`text-t1 ${gold ? 'text-[15.5px] font-bold' : 'text-[14px] font-semibold'}`}>
+                      {pr.exercise}
+                    </div>
                     {gold && (
-                      <div style={{
-                        fontSize: 11, color: '#fbbf24', fontWeight: 600, marginTop: 2,
-                        fontFamily: 'var(--font-mono)', letterSpacing: '0.05em',
-                      }}>HEAVIEST LIFT</div>
+                      <div className="text-[11px] text-amber font-semibold mt-[2px] font-mono tracking-[0.05em]">
+                        HEAVIEST LIFT
+                      </div>
                     )}
                   </div>
 
-                  {/* Weight + reps */}
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                    <span style={{
-                      fontFamily: 'var(--font-display)', fontWeight: 700,
-                      fontSize: gold ? 28 : 22, lineHeight: 1,
-                      letterSpacing: 'var(--display-ls)', color: 'var(--t1)',
-                    }}>{pr.weight}</span>
-                    <span style={{
-                      fontSize: 11, color: 'var(--t3)', fontFamily: 'var(--font-mono)',
-                    }}>kg×{pr.reps}</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className={`font-display font-bold leading-none tracking-[var(--display-ls)] text-t1 ${gold ? 'text-[28px]' : 'text-[22px]'}`}>
+                      {pr.weight}
+                    </span>
+                    <span className="text-[11px] text-t3 font-mono">kg×{pr.reps}</span>
                   </div>
                 </div>
               );
@@ -395,7 +336,7 @@ export default function StatsView() {
         </Panel>
       )}
 
-      <div style={{ height: 8 }} />
+      <div className="h-2" />
     </div>
   );
 }

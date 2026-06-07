@@ -6,23 +6,21 @@ import { Zap, X, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getProfiles } from '@/lib/storage';
 
+// size prop is dynamic, so width/height/borderRadius/fontSize must stay inline
 function Wordmark({ size = 44 }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <div style={{
-        width: size * 0.92, height: size * 0.92, borderRadius: size * 0.26,
-        background: 'var(--brand)', flexShrink: 0,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 0 28px var(--brand-glow)', transform: 'rotate(-6deg)',
-      }}>
+    <div className="flex items-center gap-[10px]">
+      <div
+        className="shrink-0 flex items-center justify-center bg-brand shadow-[0_0_28px_var(--brand-glow)] -rotate-6"
+        style={{ width: size * 0.92, height: size * 0.92, borderRadius: size * 0.26 }}
+      >
         <Zap size={size * 0.5} fill="#0a0c10" strokeWidth={0} />
       </div>
-      <div style={{
-        fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: size,
-        lineHeight: 0.86, letterSpacing: 'var(--display-ls)',
-        color: 'var(--t1)', fontStyle: 'italic', textTransform: 'uppercase',
-      }}>
-        Gym<span style={{ color: 'var(--brand)' }}>Track</span>
+      <div
+        className="font-display font-bold leading-[0.86] tracking-[var(--display-ls)] text-t1 italic uppercase"
+        style={{ fontSize: size }}
+      >
+        Gym<span className="text-brand">Track</span>
       </div>
     </div>
   );
@@ -31,7 +29,7 @@ function Wordmark({ size = 44 }) {
 function Keypad({ onDigit, onDelete }) {
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'];
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+    <div className="grid grid-cols-3 gap-3">
       {keys.map((k, i) => {
         if (k === '') return <div key={i} />;
         const isDel = k === 'del';
@@ -40,13 +38,7 @@ function Keypad({ onDigit, onDelete }) {
             key={i}
             type="button"
             onClick={() => isDel ? onDelete() : onDigit(k)}
-            style={{
-              height: 60, borderRadius: 18, cursor: 'pointer',
-              border: '1px solid var(--border)', background: 'var(--surface)',
-              color: 'var(--t1)', fontFamily: 'var(--font-display)', fontWeight: 600,
-              fontSize: 26, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'background .12s',
-            }}
+            className="h-[60px] rounded-[18px] cursor-pointer border border-border bg-surface text-t1 font-display font-semibold text-[26px] flex items-center justify-center transition-[background] duration-[120ms]"
             onMouseDown={e => { e.currentTarget.style.background = 'var(--surface-2)'; }}
             onMouseUp={e => { e.currentTarget.style.background = 'var(--surface)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface)'; }}
@@ -63,7 +55,7 @@ export default function LoginPage() {
   const { login, currentProfile, isLoading } = useAuth();
   const router = useRouter();
   const [profiles, setProfiles] = useState([]);
-  const [mode, setMode]   = useState('select'); // 'select' | 'pin'
+  const [mode, setMode]   = useState('select');
   const [sel, setSel]     = useState(null);
   const [pin, setPin]     = useState('');
   const [shake, setShake] = useState(false);
@@ -95,68 +87,49 @@ export default function LoginPage() {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
-        <div style={{ color: 'var(--t3)', fontSize: 14 }}>Loading…</div>
+      <div className="min-h-[100dvh] flex items-center justify-center bg-background">
+        <div className="text-t3 text-[14px]">Loading…</div>
       </div>
     );
   }
 
   return (
-    <div style={{
-      minHeight: '100dvh', background: 'var(--bg)',
-      display: 'flex', flexDirection: 'column',
-      padding: '64px 24px 34px',
-      position: 'relative', overflow: 'hidden',
-    }}>
+    <div className="min-h-[100dvh] bg-background flex flex-col px-6 pt-16 pb-[34px] relative overflow-hidden">
       {/* Ambient glows */}
-      <div style={{
-        position: 'absolute', top: -120, left: -80,
-        width: 320, height: 320, borderRadius: '50%',
-        background: 'radial-gradient(circle, var(--brand-glow), transparent 70%)',
-        opacity: 0.5, pointerEvents: 'none',
-      }} />
-      <div style={{
-        position: 'absolute', bottom: 40, right: -120,
-        width: 280, height: 280, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(251,146,60,0.18), transparent 70%)',
-        pointerEvents: 'none',
-      }} />
+      <div className="absolute -top-[120px] -left-[80px] size-[320px] rounded-full opacity-50 pointer-events-none"
+        style={{ background: 'radial-gradient(circle, var(--brand-glow), transparent 70%)' }} />
+      <div className="absolute bottom-[40px] -right-[120px] size-[280px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(251,146,60,0.18), transparent 70%)' }} />
 
-      {/* ── SELECT ──────────────────────────────────────────────────────── */}
+      {/* SELECT mode */}
       {mode === 'select' && (
         <>
-          <div style={{ position: 'relative', marginTop: 18 }}>
+          <div className="relative mt-[18px]">
             <Wordmark size={50} />
-            <div style={{ marginTop: 22, maxWidth: 280 }}>
-              <div className="gt-display" style={{ fontSize: 34, lineHeight: 0.98, color: 'var(--t1)' }}>
-                Time to<br /><span style={{ color: 'var(--brand)' }}>train.</span>
+            <div className="mt-[22px] max-w-[280px]">
+              <div className="gt-display text-[34px] leading-[0.98] text-t1">
+                Time to<br /><span className="text-brand">train.</span>
               </div>
             </div>
           </div>
 
-          <div style={{ position: 'relative', marginTop: 30, display: 'flex', flexDirection: 'column', gap: 12, flex: 1 }}>
+          <div className="relative mt-[30px] flex flex-col gap-3 flex-1">
             {profiles.length === 0 ? (
               <>
-                <p style={{ color: 'var(--t2)', fontSize: 14.5, lineHeight: 1.5, maxWidth: 280 }}>
+                <p className="text-t2 text-[14.5px] leading-[1.5] max-w-[280px]">
                   No profiles yet. Create one to start tracking your workouts.
                 </p>
                 <Link
                   href="/register"
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    padding: '17px', borderRadius: 18, textDecoration: 'none',
-                    background: 'var(--brand)', color: '#0a0c10',
-                    fontFamily: 'var(--font-display)', fontWeight: 700,
-                    fontSize: 19, letterSpacing: 'var(--display-ls)', textTransform: 'uppercase',
-                    boxShadow: '0 10px 30px var(--brand-glow)',
-                  }}
+                  className="flex items-center justify-center gap-2 py-[17px] rounded-[18px] no-underline bg-brand text-[#0a0c10] font-display font-bold text-[19px] tracking-[var(--display-ls)] uppercase"
+                  style={{ boxShadow: '0 10px 30px var(--brand-glow)' }}
                 >
                   Create Profile <ChevronRight size={20} strokeWidth={2.6} />
                 </Link>
               </>
             ) : (
               <>
-                <div className="gt-eyebrow" style={{ marginBottom: 2 }}>
+                <div className="gt-eyebrow mb-[2px]">
                   Profiles &middot; {profiles.length}
                 </div>
 
@@ -165,46 +138,28 @@ export default function LoginPage() {
                     key={p.id}
                     type="button"
                     onClick={() => pickProfile(p)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 14,
-                      padding: '14px 16px', cursor: 'pointer', borderRadius: 20,
-                      border: '1px solid var(--border)', background: 'var(--surface)',
-                      textAlign: 'left', transition: 'border-color .15s',
-                    }}
+                    className="flex items-center gap-[14px] px-4 py-[14px] cursor-pointer rounded-[20px] border border-border bg-surface text-left transition-[border-color] duration-150"
                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--brand)'; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
                   >
-                    <div style={{
-                      width: 48, height: 48, borderRadius: 14, flexShrink: 0,
-                      background: 'linear-gradient(140deg, var(--surface-2), #0c0f15)',
-                      border: '1px solid var(--border-strong)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: 'var(--font-display)', fontWeight: 700,
-                      fontSize: 22, color: 'var(--brand)', letterSpacing: 'var(--display-ls)',
-                    }}>
+                    <div className="size-12 rounded-[14px] shrink-0 border border-border-strong flex items-center justify-center font-display font-bold text-[22px] text-brand tracking-[var(--display-ls)]"
+                      style={{ background: 'linear-gradient(140deg, var(--surface-2), #0c0f15)' }}>
                       {p.name[0].toUpperCase()}
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 21,
-                        letterSpacing: 'var(--display-ls)', color: 'var(--t1)',
-                        textTransform: 'uppercase', lineHeight: 1,
-                      }}>{p.name}</div>
+                    <div className="flex-1">
+                      <div className="font-display font-semibold text-[21px] tracking-[var(--display-ls)] text-t1 uppercase leading-none">
+                        {p.name}
+                      </div>
                     </div>
-                    <ChevronRight size={20} style={{ color: 'var(--t3)', flexShrink: 0 }} />
+                    <ChevronRight size={20} className="text-t3 shrink-0" />
                   </button>
                 ))}
 
                 <Link
                   href="/register"
-                  style={{
-                    marginTop: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    padding: '14px', borderRadius: 20, textDecoration: 'none',
-                    border: '1px dashed var(--border-strong)', background: 'transparent',
-                    color: 'var(--t2)', fontSize: 14, fontWeight: 600, fontFamily: 'inherit',
-                  }}
+                  className="mt-1 flex items-center justify-center gap-2 py-[14px] rounded-[20px] no-underline border border-dashed border-border-strong bg-transparent text-t2 text-[14px] font-semibold"
                 >
-                  <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> New athlete
+                  <span className="text-[18px] leading-none">+</span> New athlete
                 </Link>
               </>
             )}
@@ -212,46 +167,39 @@ export default function LoginPage() {
         </>
       )}
 
-      {/* ── PIN ─────────────────────────────────────────────────────────── */}
+      {/* PIN mode */}
       {mode === 'pin' && sel && (
         <>
-          <div style={{ position: 'relative', marginTop: 6 }}>
+          <div className="relative mt-[6px]">
             <Wordmark size={38} />
           </div>
 
-          <div style={{ position: 'relative', marginTop: 26, flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div className="relative mt-[26px] flex-1 flex flex-col">
             <button
               type="button"
               onClick={() => { setMode('select'); setPin(''); setSel(null); }}
-              style={{
-                alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: 6,
-                background: 'none', border: 'none', color: 'var(--t2)',
-                fontSize: 13.5, cursor: 'pointer', fontFamily: 'inherit', padding: 0,
-              }}
+              className="self-start flex items-center gap-[6px] bg-transparent border-0 text-t2 text-[13.5px] cursor-pointer p-0"
             >
               <ChevronRight size={16} style={{ transform: 'rotate(180deg)' }} /> Switch athlete
             </button>
 
-            <div className="gt-display" style={{ marginTop: 22, fontSize: 30, color: 'var(--t1)' }}>
+            <div className="gt-display mt-[22px] text-[30px] text-t1">
               HEY {sel.name.toUpperCase()}
             </div>
-            <div style={{ color: 'var(--t2)', fontSize: 14, marginTop: 4 }}>
-              Enter your PIN to lock in.
-            </div>
+            <div className="text-t2 text-[14px] mt-1">Enter your PIN to lock in.</div>
 
             {/* PIN dots */}
-            <div
-              className={shake ? 'gt-shake' : undefined}
-              style={{ display: 'flex', gap: 14, justifyContent: 'center', margin: '34px 0 30px' }}
-            >
+            <div className={`flex gap-[14px] justify-center my-[34px] ${shake ? 'gt-shake' : ''}`}>
               {[0, 1, 2, 3].map(i => (
-                <div key={i} style={{
-                  width: 16, height: 16, borderRadius: '50%',
-                  background: i < pin.length ? 'var(--brand)' : 'transparent',
-                  border: '2px solid ' + (i < pin.length ? 'var(--brand)' : 'var(--border-strong)'),
-                  boxShadow: i < pin.length ? '0 0 14px var(--brand-glow)' : 'none',
-                  transition: 'all .15s',
-                }} />
+                <div
+                  key={i}
+                  className="size-4 rounded-full transition-all duration-150"
+                  style={{
+                    background: i < pin.length ? 'var(--brand)' : 'transparent',
+                    border: '2px solid ' + (i < pin.length ? 'var(--brand)' : 'var(--border-strong)'),
+                    boxShadow: i < pin.length ? '0 0 14px var(--brand-glow)' : 'none',
+                  }}
+                />
               ))}
             </div>
 
