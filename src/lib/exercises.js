@@ -1,5 +1,12 @@
 export const EXERCISE_CATEGORIES = ['Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Core']
 
+export const MUSCLE_LABELS = {
+  chest: 'Chest', abs: 'Abs', shoulders: 'Shoulders', biceps: 'Biceps',
+  forearms: 'Forearms', quads: 'Quads', calves: 'Calves', traps: 'Traps',
+  lats: 'Lats', 'lower-back': 'Lower Back', triceps: 'Triceps',
+  'rear-delts': 'Rear Delts', glutes: 'Glutes', hamstrings: 'Hamstrings',
+}
+
 export const EXERCISES = [
   // CHEST
   { id: 'bench-press', name: 'Bench Press', category: 'Chest', primaryMuscles: ['chest'], secondaryMuscles: ['triceps', 'shoulders'] },

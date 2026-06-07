@@ -1,44 +1,17 @@
 "use client";
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useId } from 'react';
 import { Flame, Calendar, TrendingUp, Trophy, ArrowUp, ArrowDown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLogger } from '@/contexts/LoggerContext';
 import { getWorkouts } from '@/lib/storage';
+import { ymd, workoutStreak, thisWeekCount } from '@/lib/dateUtils';
+import { MUSCLE_LABELS } from '@/lib/exercises';
 
-function ymd(d) {
-  return d.getFullYear() + '-' +
-    String(d.getMonth() + 1).padStart(2, '0') + '-' +
-    String(d.getDate()).padStart(2, '0');
-}
-function todayYmd() { return ymd(new Date()); }
 function fmtDate(ds) {
   return new Date(ds + 'T00:00:00').toLocaleDateString('en-AU', { month: 'short', day: 'numeric' });
 }
 
 function vol(w) { return w.sets.reduce((s, x) => s + x.weight * x.reps, 0); }
-
-function thisWeekCount(workouts) {
-  const cutoff = Date.now() - 7 * 864e5;
-  return new Set(workouts.filter(w => new Date(w.timestamp).getTime() >= cutoff).map(w => w.date)).size;
-}
-
-function workoutStreak(workouts) {
-  if (!workouts.length) return 0;
-  const days = [...new Set(workouts.map(w => w.date))].sort().reverse();
-  const today = todayYmd();
-  const d = new Date(); d.setDate(d.getDate() - 1);
-  const yesterday = ymd(d);
-  if (days[0] !== today && days[0] !== yesterday) return 0;
-  let streak = 0;
-  let cursor = days[0];
-  for (const day of days) {
-    if (day !== cursor) break;
-    streak++;
-    const dt = new Date(cursor + 'T00:00:00');
-    dt.setDate(dt.getDate() - 1);
-    cursor = ymd(dt);
-  }
-  return streak;
-}
 
 function buildVolumeByDay(workouts, days = 14) {
   const result = [];
@@ -58,13 +31,6 @@ function buildTopExercises(workouts, n = 5) {
     .map(([name, v]) => ({ name, volume: Math.round(v) }))
     .sort((a, b) => b.volume - a.volume).slice(0, n);
 }
-
-const MUSCLE_LABELS = {
-  chest: 'Chest', abs: 'Abs', shoulders: 'Shoulders', biceps: 'Biceps',
-  forearms: 'Forearms', quads: 'Quads', calves: 'Calves', traps: 'Traps',
-  lats: 'Lats', 'lower-back': 'Lower Back', triceps: 'Triceps',
-  'rear-delts': 'Rear Delts', glutes: 'Glutes', hamstrings: 'Hamstrings',
-};
 
 function buildMuscleFreq(workouts, n = 6) {
   const map = {};
@@ -90,6 +56,8 @@ function buildPRs(workouts, n = 6) {
 }
 
 function VolumeChart({ data }) {
+  const uid = useId();
+  const gradId = `gtVolFill-${uid.replace(/:/g, '')}`;
   const W = 320, H = 130, pad = 6;
   if (data.length < 2) return null;
   const max = Math.max(...data.map(d => d.volume), 1);
@@ -114,7 +82,7 @@ function VolumeChart({ data }) {
       className="block overflow-visible"
     >
       <defs>
-        <linearGradient id="gtVolFill" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="var(--brand)" stopOpacity="0.35" />
           <stop offset="1" stopColor="var(--brand)" stopOpacity="0" />
         </linearGradient>
@@ -127,7 +95,7 @@ function VolumeChart({ data }) {
           stroke="var(--border)" strokeWidth="1" strokeDasharray="2 4"
         />
       ))}
-      <path d={area} fill="url(#gtVolFill)" />
+      <path d={area} fill={`url(#${gradId})`} />
       <path d={line} fill="none" stroke="var(--brand)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
       {peakV > 0 && (
         <circle cx={peak[0]} cy={peak[1]} r="4" fill="var(--brand)" stroke="var(--sheet)" strokeWidth="2.5" />
@@ -189,11 +157,12 @@ function Panel({ title, right, children }) {
 
 export default function StatsView() {
   const { currentProfile } = useAuth();
+  const { savedAt } = useLogger();
   const [workouts, setWorkouts] = useState([]);
 
   useEffect(() => {
     if (currentProfile) setWorkouts(getWorkouts(currentProfile.profileId));
-  }, [currentProfile]);
+  }, [currentProfile, savedAt]);
 
   const volData      = useMemo(() => buildVolumeByDay(workouts), [workouts]);
   const topEx        = useMemo(() => buildTopExercises(workouts), [workouts]);

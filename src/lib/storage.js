@@ -5,6 +5,15 @@ function workoutsKey(profileId) {
   return `gymWorkouts_${profileId}`
 }
 
+// ── PIN hashing ────────────────────────────────────────────────────────────────
+
+async function hashPin(pin, salt) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(salt + ':' + pin);
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 // ── Profiles ──────────────────────────────────────────────────────────────────
 
 export function getProfiles() {
@@ -16,12 +25,14 @@ export function getProfiles() {
   }
 }
 
-export function createProfile(name, pin) {
+export async function createProfile(name, pin) {
   const profiles = getProfiles()
+  const id = Date.now().toString()
+  const pinHash = await hashPin(pin, id)
   const profile = {
-    id: Date.now().toString(),
+    id,
     name: name.trim(),
-    pin,
+    pinHash,
     createdAt: new Date().toISOString(),
   }
   localStorage.setItem(PROFILES_KEY, JSON.stringify([...profiles, profile]))
@@ -32,9 +43,13 @@ export function getProfileById(profileId) {
   return getProfiles().find(p => p.id === profileId) || null
 }
 
-export function verifyPin(profileId, pin) {
+export async function verifyPin(profileId, pin) {
   const profile = getProfileById(profileId)
-  return profile != null && profile.pin === pin
+  if (!profile) return false
+  // Support legacy profiles that stored plaintext pin
+  if (profile.pin !== undefined) return profile.pin === pin
+  const hash = await hashPin(pin, profileId)
+  return profile.pinHash === hash
 }
 
 export function deleteProfile(profileId) {
@@ -79,11 +94,16 @@ export function getWorkouts(profileId) {
 
 export function saveWorkout(profileId, workoutData) {
   const workouts = getWorkouts(profileId)
+  // Use local date so the workout groups under the user's calendar day, not UTC
+  const now = new Date()
+  const date = now.getFullYear() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0')
   const entry = {
     ...workoutData,
     id: Date.now().toString(),
-    date: new Date().toISOString().split('T')[0],
-    timestamp: new Date().toISOString(),
+    date,
+    timestamp: now.toISOString(),
   }
   const updated = [entry, ...workouts]
   localStorage.setItem(workoutsKey(profileId), JSON.stringify(updated))

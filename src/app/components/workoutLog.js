@@ -2,15 +2,9 @@
 import { useState, useEffect } from 'react';
 import { X, Search, Plus, Minus, Check, Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLogger } from '@/contexts/LoggerContext';
 import { saveWorkout } from '@/lib/storage';
-import { EXERCISES, EXERCISE_CATEGORIES, searchExercises, getExercisesForMuscle } from '@/lib/exercises';
-
-const MUSCLE_LABELS = {
-  chest: 'Chest', abs: 'Abs', shoulders: 'Shoulders', biceps: 'Biceps',
-  forearms: 'Forearms', quads: 'Quads', calves: 'Calves', traps: 'Traps',
-  lats: 'Lats', 'lower-back': 'Lower Back', triceps: 'Triceps',
-  'rear-delts': 'Rear Delts', glutes: 'Glutes', hamstrings: 'Hamstrings',
-};
+import { EXERCISES, EXERCISE_CATEGORIES, MUSCLE_LABELS, searchExercises, getExercisesForMuscle } from '@/lib/exercises';
 
 function NumField({ value, onChange, placeholder, unit }) {
   return (
@@ -49,6 +43,7 @@ function Chip({ active, onClick, children }) {
 
 export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
   const { currentProfile } = useAuth();
+  const { notifySaved } = useLogger();
   const [shown, setShown]   = useState(false);
   const [query, setQuery]   = useState('');
   const [open, setOpen]     = useState(false);
@@ -99,6 +94,7 @@ export default function WorkoutLogger({ onSave, onClose, preselectedMuscle }) {
       sets: valid.map((s, i) => ({ setNumber: i + 1, weight: parseFloat(s.weight), reps: parseInt(s.reps) })),
       targetedMuscles: [...ex.primaryMuscles, ...ex.secondaryMuscles],
     });
+    notifySaved();
     setSaved(true);
     setTimeout(() => {
       setSaved(false);

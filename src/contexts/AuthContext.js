@@ -20,8 +20,8 @@ export function AuthProvider({ children }) {
     setIsLoading(false);
   }, []);
 
-  function login(profileId, pin) {
-    if (!verifyPin(profileId, pin)) return false;
+  async function login(profileId, pin) {
+    if (!await verifyPin(profileId, pin)) return false;
     setSession(profileId);
     setCurrentProfile(getSession());
     return true;
@@ -32,8 +32,8 @@ export function AuthProvider({ children }) {
     setCurrentProfile(null);
   }
 
-  function createProfile(name, pin) {
-    const profile = storageCreateProfile(name, pin);
+  async function createProfile(name, pin) {
+    const profile = await storageCreateProfile(name, pin);
     setSession(profile.id);
     setCurrentProfile(getSession());
     return profile;

@@ -2,13 +2,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Search, Trash2, Edit2, Check, X, Plus, Minus, Dumbbell, Layers } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLogger } from '@/contexts/LoggerContext';
 import { getWorkouts, updateWorkout, deleteWorkout } from '@/lib/storage';
-
-function ymd(d) {
-  return d.getFullYear() + '-' +
-    String(d.getMonth() + 1).padStart(2, '0') + '-' +
-    String(d.getDate()).padStart(2, '0');
-}
+import { ymd } from '@/lib/dateUtils';
 
 function relDay(dateStr) {
   const today = ymd(new Date());
@@ -40,6 +36,7 @@ function NumField({ value, onChange, placeholder, unit }) {
 
 export default function WorkoutHistory() {
   const { currentProfile } = useAuth();
+  const { savedAt } = useLogger();
   const [workouts, setWorkouts]     = useState([]);
   const [search, setSearch]         = useState('');
   const [editId, setEditId]         = useState(null);
@@ -48,10 +45,11 @@ export default function WorkoutHistory() {
 
   useEffect(() => {
     if (currentProfile) setWorkouts(getWorkouts(currentProfile.profileId));
-  }, [currentProfile]);
+  }, [currentProfile, savedAt]);
 
-  const filtered = workouts.filter(w =>
-    w.exerciseName.toLowerCase().includes(search.toLowerCase())
+  const filtered = useMemo(
+    () => workouts.filter(w => w.exerciseName.toLowerCase().includes(search.toLowerCase())),
+    [workouts, search],
   );
 
   const grouped = useMemo(() => {

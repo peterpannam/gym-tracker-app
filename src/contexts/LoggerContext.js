@@ -6,6 +6,7 @@ const LoggerContext = createContext(null);
 export function LoggerProvider({ children }) {
   const [loggerOpen, setLoggerOpen] = useState(false);
   const [preselectedMuscle, setPreselectedMuscle] = useState(null);
+  const [savedAt, setSavedAt] = useState(0);
 
   const openLogger = useCallback((muscle = null) => {
     setPreselectedMuscle(muscle);
@@ -17,8 +18,10 @@ export function LoggerProvider({ children }) {
     setPreselectedMuscle(null);
   }, []);
 
+  const notifySaved = useCallback(() => setSavedAt(Date.now()), []);
+
   return (
-    <LoggerContext.Provider value={{ loggerOpen, preselectedMuscle, openLogger, closeLogger }}>
+    <LoggerContext.Provider value={{ loggerOpen, preselectedMuscle, openLogger, closeLogger, savedAt, notifySaved }}>
       {children}
     </LoggerContext.Provider>
   );

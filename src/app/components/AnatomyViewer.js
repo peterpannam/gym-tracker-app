@@ -4,6 +4,7 @@ import { Flame, CalendarDays, Target } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLogger } from '@/contexts/LoggerContext';
 import { getWorkouts } from '@/lib/storage';
+import { workoutStreak, thisWeekCount } from '@/lib/dateUtils';
 
 const MUSCLE_ZONES = {
   front: [
@@ -39,14 +40,6 @@ const MUSCLE_ZONES = {
 
 const HEAT_COLORS = ['#64748b', '#fde047', '#fb923c', '#f43f5e', '#dc2626'];
 
-function ymd(d) {
-  return d.getFullYear() + '-' +
-    String(d.getMonth() + 1).padStart(2, '0') + '-' +
-    String(d.getDate()).padStart(2, '0');
-}
-function todayYmd() { return ymd(new Date()); }
-function daysAgoYmd(n) { const d = new Date(); d.setDate(d.getDate() - n); return ymd(d); }
-
 function ts(w) {
   return typeof w.timestamp === 'number' ? w.timestamp : new Date(w.timestamp).getTime();
 }
@@ -57,26 +50,6 @@ function heatForMuscle(base, workouts) {
   return Math.min(count, 4);
 }
 
-function workoutStreak(workouts) {
-  if (!workouts.length) return 0;
-  const days = [...new Set(workouts.map(w => w.date))].sort().reverse();
-  if (days[0] !== todayYmd() && days[0] !== daysAgoYmd(1)) return 0;
-  let streak = 0, cursor = days[0];
-  for (const day of days) {
-    if (day === cursor) {
-      streak++;
-      const d = new Date(cursor + 'T00:00:00');
-      d.setDate(d.getDate() - 1);
-      cursor = ymd(d);
-    } else break;
-  }
-  return streak;
-}
-
-function thisWeekCount(workouts) {
-  const weekAgo = Date.now() - 7 * 864e5;
-  return new Set(workouts.filter(w => ts(w) >= weekAgo).map(w => w.date)).size;
-}
 
 // Muscle zone — positions are data-driven percentages, must stay inline
 function MuscleZone({ zone, heat, selected, onTap }) {
@@ -249,7 +222,7 @@ function MuscleSheet({ zone, workouts, onClose, onLog }) {
 
 export default function AnatomyViewer() {
   const { currentProfile } = useAuth();
-  const { openLogger } = useLogger();
+  const { openLogger, savedAt } = useLogger();
   const [view, setView] = useState('front');
   const [selected, setSelected] = useState(null);
   const [flipping, setFlipping] = useState(false);
@@ -258,7 +231,7 @@ export default function AnatomyViewer() {
 
   useEffect(() => {
     if (currentProfile) setWorkouts(getWorkouts(currentProfile.profileId));
-  }, [currentProfile]);
+  }, [currentProfile, savedAt]);
 
   function flip(to) {
     if (to === view) return;
